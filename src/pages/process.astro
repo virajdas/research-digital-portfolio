@@ -1,0 +1,54 @@
+---
+import Base from '../layouts/Base.astro';
+import { method, timeline, results, film } from '../content/site';
+const statusText = { done: 'Done', now: 'In progress', next: 'Coming up' };
+---
+<Base title="Process" page="process" still={film.stills.process}>
+  <section class="page-head pad">
+    <h1 class="page-title">Process</h1>
+    <p class="page-lede">How the project will be carried out, where it stands today, and where the results will go.</p>
+  </section>
+
+  <section class="method pad">
+    <div class="method__head">
+      <h2 data-rise>{method.heading}</h2>
+      <p>{method.intro}</p>
+    </div>
+    <ol class="method__steps">
+      {method.steps.map((s) => (
+        <li>
+          <h3>{s.title}</h3>
+          <p>{s.body}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="time pad">
+    <h2 data-rise>{timeline.heading}</h2>
+    <div class="time__list">
+      <span class="time__line" aria-hidden="true"><i></i></span>
+      <ol>
+        {timeline.entries.map((e) => (
+          <li data-status={e.status}>
+            <p class="time__when">{e.when}</p>
+            <div>
+              <h3>{e.title}</h3>
+              <p>{e.note}</p>
+            </div>
+            <p class="time__status">{statusText[e.status]}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="status pad">
+    <h2 data-rise>{results.heading}</h2>
+    <p class="status__empty">{results.empty}</p>
+    <p class="status__detail">{results.detail}</p>
+    <ul class="status__measures" aria-label="What will be measured">
+      {results.measures.map((m) => <li>{m}</li>)}
+    </ul>
+  </section>
+</Base>

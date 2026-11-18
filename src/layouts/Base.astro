@@ -1,0 +1,60 @@
+---
+import '@fontsource-variable/geist/wght.css';
+import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+import { meta, nav, film } from '../content/site';
+import { u, unbase } from '../lib/url';
+
+interface Props { title?: string; page: string; still?: string }
+const { title, page, still } = Astro.props;
+const fullTitle = title ? `${title} | ${meta.brand}` : meta.title;
+const path = unbase(Astro.url.pathname);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={meta.description} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={meta.description} />
+    <meta name="theme-color" content={page === 'about' ? '#efeeea' : '#0a0a0b'} />
+    <link rel="icon" type="image/svg+xml" href={u('/favicon.svg')} />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <ClientRouter />
+  </head>
+  <body>
+    <!-- Backdrop: the scroll-driven film on the home page, a single still from it elsewhere -->
+    <div class="backdrop" aria-hidden="true">
+      {page === 'home'
+        ? <video id="film" src={u(film.src) || undefined} poster={u(film.poster)} muted playsinline preload="auto"></video>
+        : still && <img src={u(still)} alt="" />}
+      <div class="backdrop__scrim"></div>
+    </div>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="nav">
+      <a class="nav__brand" href={u('/')}>{meta.brand}</a>
+      <nav aria-label="Main">
+        {nav.map((n) => (
+          <a href={u(n.href)} aria-current={n.href === path ? 'page' : undefined}>{n.label}</a>
+        ))}
+      </nav>
+      <div class="nav__progress" aria-hidden="true"><i></i></div>
+    </header>
+
+    <main id="main" data-page={page}>
+      <slot />
+    </main>
+
+    <footer class="foot pad">
+      <p>{meta.author}. Last updated {meta.lastUpdated}.</p>
+      <a href="#main">Back to top</a>
+    </footer>
+
+    <script>
+      import '../scripts/main.ts';
+    </script>
+  </body>
+</html>

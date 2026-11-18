@@ -1,0 +1,123 @@
+---
+import Base from '../layouts/Base.astro';
+import { u } from '../lib/url';
+import { hero, problem, question, how, sources, gap, results, more } from '../content/site';
+
+const featured = sources.flatMap((g) => g.items).filter((s) => s.featured);
+// Abstract bars for the diagram: widths only, they stand for nothing measured.
+const bars = [46, 78, 30, 92, 58, 68, 24];
+---
+<Base page="home">
+  <!-- Hero: the headline sits over the opening of the film -->
+  <section class="hero">
+    <div class="hero__pin">
+      <div class="hero__copy pad">
+        <h1 class="hero__title">{hero.headline}</h1>
+        <p class="hero__lede">{hero.lede}</p>
+        <div class="hero__cta">
+          <a class="btn btn--solid" href={u(hero.primary.href)}>{hero.primary.label}</a>
+          <a class="btn" href={u(hero.secondary.href)}>{hero.secondary.label}</a>
+        </div>
+        <p class="hero__byline">{hero.byline}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- The problem: pinned, the score drops as matching events pile up -->
+  <section class="prob">
+    <div class="prob__pin pad">
+      <div class="prob__copy">
+        <h2 data-rise>{problem.heading}</h2>
+        <p>{problem.body}</p>
+      </div>
+      <div class="prob__figure">
+        <div class="prob__num" aria-hidden="true">
+          <span>{problem.before.value}</span>
+          <span>{problem.after.value}</span>
+        </div>
+        <div class="prob__cap" aria-hidden="true">
+          <span>{problem.before.caption}</span>
+          <span>{problem.after.caption}</span>
+        </div>
+        <p class="sr-only">{problem.before.caption}: {problem.before.value}. {problem.after.caption}: {problem.after.value}.</p>
+        <div class="prob__pips" aria-hidden="true">
+          {Array.from({ length: problem.steps }, () => <i></i>)}
+        </div>
+        <p class="prob__source">Source: <a href={problem.source.href} target="_blank" rel="noopener">{problem.source.text}</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Research question -->
+  <section class="ask pad">
+    <p class="ask__label">The question this project asks</p>
+    <p class="ask__text" data-words>{question.formal}</p>
+  </section>
+
+  <!-- How it works: pinned, three steps -->
+  <section id="how" class="how">
+    <div class="how__pin pad">
+      <div class="how__copy">
+        <h2>{how.heading}</h2>
+        <ol class="how__steps">
+          {how.steps.map((s) => (
+            <li>
+              <h3>{s.title}</h3>
+              <p>{s.body}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div class="how__stage" aria-hidden="true">
+        <p class="how__tag how__tag--in">Stored memories</p>
+        <div class="how__bars">
+          {bars.map((b) => <div class="bar" style={`--w:${b}%`}><i></i></div>)}
+        </div>
+        <div class="how__bias"><span>Outcome-based bias</span></div>
+        <p class="how__tag how__tag--out">To the model</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Research teaser -->
+  <section class="lit pad">
+    <div class="lit__head">
+      <h2 data-rise>The research it builds on</h2>
+      <a class="btn" href={u('/research')}>Read all twelve sources</a>
+    </div>
+    <ul class="rows">
+      {featured.map((s) => (
+        <li class="row">
+          <a href={s.href} target="_blank" rel="noopener">
+            <span class="row__year">{s.year}</span>
+            <span class="row__name">{s.name}</span>
+            <span class="row__by">{s.by}</span>
+            <span class="row__note"><span>{s.note}</span></span>
+          </a>
+        </li>
+      ))}
+    </ul>
+    <p class="lit__gap" data-words>{gap}</p>
+  </section>
+
+  <!-- Where it stands -->
+  <section class="status pad">
+    <h2 data-rise>{results.heading}</h2>
+    <p class="status__empty">{results.empty}</p>
+    <p class="status__detail">{results.detail} <a href={u('/process')}>See the plan and timeline</a>.</p>
+  </section>
+
+  <!-- Closing links -->
+  <section class="more pad">
+    <ul>
+      {more.map((m) => (
+        <li>
+          <a href={u(m.href)}>
+            <span class="more__label">{m.label}</span>
+            <span class="more__note">{m.note}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Base>

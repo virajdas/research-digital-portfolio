@@ -1,0 +1,59 @@
+---
+import Base from '../layouts/Base.astro';
+import { sources, gap, references, film } from '../content/site';
+import { litReview } from '../content/litreview';
+---
+<Base title="Research" page="research" still={film.stills.research}>
+  <section class="page-head pad">
+    <h1 class="page-title">Research</h1>
+    <p class="page-lede">Twelve sources, in the order the literature review walks through them, followed by the review itself.</p>
+  </section>
+
+  <section class="srcs pad">
+    {sources.map((g) => (
+      <div class="srcs__group">
+        <h2 class="srcs__title">{g.group}</h2>
+        <ul class="rows">
+          {g.items.map((s) => (
+            <li class="row">
+              <a href={s.href} target="_blank" rel="noopener">
+                <span class="row__year">{s.year}</span>
+                <span class="row__name">{s.name}</span>
+                <span class="row__by">{s.by}</span>
+                <span class="row__note"><span>{s.note}</span></span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+    <p class="lit__gap" data-words>{gap}</p>
+  </section>
+
+  <section class="review pad">
+    <h2 data-rise>Literature review</h2>
+    <p class="review__note">The full text, as written in the paper.</p>
+    <div class="review__body">
+      <nav class="review__toc" aria-label="Sections of the literature review">
+        {litReview.map((s, i) => <a href={`#lit-${i}`}>{s.heading}</a>)}
+      </nav>
+      <div class="review__text">
+        {litReview.map((s, i) => (
+          <article id={`lit-${i}`}>
+            <h3>{s.heading}</h3>
+            {s.paragraphs.map((p) => <p>{p}</p>)}
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="refs pad">
+    <h2 data-rise>References</h2>
+    <ol>
+      {references.map((r) => (
+        <li><a href={r.href} target="_blank" rel="noopener">{r.text}</a></li>
+      ))}
+    </ol>
+  </section>
+</Base>

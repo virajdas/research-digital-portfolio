@@ -1,0 +1,82 @@
+---
+import Base from '../layouts/Base.astro';
+import { u } from '../lib/url';
+import { about, film } from '../content/site';
+---
+<Base title="About" page="about" still={about.photo ? undefined : film.stills.about}>
+  <!-- Two columns: the text scrolls on the left, the portrait stays put on the right.
+       The portrait is a double exposure: a cutout of the photo, with a second image
+       showing through the silhouette everywhere except the face. -->
+  <div class:list={['about', { 'about--solo': !about.photo }]}>
+    <div class="about__text pad">
+      <h1 class="me__name">{about.name}</h1>
+
+      <section class="bio">
+        {about.bio.map((p) => <p class="bio__p" data-words>{p}</p>)}
+      </section>
+
+      {about.story.length > 0 && (
+        <section class="story">
+          {about.story.map((part) => (
+            <article class="story__part">
+              <h2 data-rise>{part.heading}</h2>
+              <div class="story__body">
+                {part.paragraphs.map((p) => <p>{p}</p>)}
+              </div>
+            </article>
+          ))}
+        </section>
+      )}
+
+      <section class="facts">
+        <dl>
+          {about.facts.map((f) => (
+            <div><dt>{f.label}</dt><dd>{f.value}</dd></div>
+          ))}
+        </dl>
+      </section>
+
+      {about.pastWork.length > 0 && (
+        <section class="work">
+          <h2 data-rise>Past work</h2>
+          <ul class="rows">
+            {about.pastWork.map((w) => (
+              <li class="row">
+                <a href={u(w.href) || undefined} target={w.href ? '_blank' : undefined} rel="noopener">
+                  <span class="row__year">{w.year}</span>
+                  <span class="row__name">{w.title}</span>
+                  <span class="row__by"></span>
+                  <span class="row__note"><span>{w.note}</span></span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {about.contact.length > 0 && (
+        <section class="more">
+          <ul>
+            {about.contact.map((c) => (
+              <li>
+                <a href={u(c.href)}>
+                  <span class="more__label">{c.label}</span>
+                  <span class="more__note">{c.value}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </div>
+
+    {about.photo && (
+      <aside class="about__side">
+        <div class="dx" style={`--cut:url(${u(about.photo)})`}>
+          <img class="dx__portrait" src={u(about.photo)} alt={about.photoAlt} />
+          <div class="dx__fill"><div class="dx__sky" style={`background-image:url(${u(about.exposure)})`}></div></div>
+        </div>
+      </aside>
+    )}
+  </div>
+</Base>
