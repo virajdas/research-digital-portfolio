@@ -7,6 +7,7 @@ gsap.registerPlugin(ScrollTrigger, SplitText);
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $ = <T extends HTMLElement = HTMLElement>(s: string, root: ParentNode = document) => root.querySelector<T>(s);
 const $$ = <T extends HTMLElement = HTMLElement>(s: string, root: ParentNode = document) => [...root.querySelectorAll<T>(s)];
+// Line-based splits use autoSplit (see below) so the lines re-flow if the window is resized.
 const LINES = { type: 'lines', mask: 'lines', linesClass: 'split-line' } as const;
 const CHARS = { type: 'lines,words,chars', mask: 'lines', linesClass: 'split-line' } as const;
 
@@ -55,8 +56,10 @@ function common() {
   gsap.to('.nav__progress i', { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: true } });
 
   $$('[data-rise]').forEach((el) => {
-    const s = SplitText.create(el, LINES);
-    gsap.from(s.lines, { yPercent: 110, duration: 1.1, ease: 'power4.out', stagger: 0.09, scrollTrigger: { trigger: el, start: 'top 88%' } });
+    SplitText.create(el, {
+      ...LINES, autoSplit: true,
+      onSplit: (s) => gsap.from(s.lines, { yPercent: 110, duration: 1.1, ease: 'power4.out', stagger: 0.09, scrollTrigger: { trigger: el, start: 'top 88%' } }),
+    });
   });
 
   $$('[data-words]').forEach((el) => {
@@ -79,8 +82,10 @@ function common() {
 
   const title = $('.page-title');
   if (title) {
-    const s = SplitText.create(title, CHARS);
-    gsap.from(s.chars, { yPercent: 110, duration: 1.2, ease: 'power4.out', stagger: 0.035 });
+    SplitText.create(title, {
+      ...CHARS, autoSplit: true,
+      onSplit: (s) => gsap.from(s.chars, { yPercent: 110, duration: 1.2, ease: 'power4.out', stagger: 0.035 }),
+    });
     gsap.from('.page-lede', { autoAlpha: 0, y: 20, duration: 1, ease: 'power3.out', delay: 0.5 });
     gsap.to('.page-head', { autoAlpha: 0.1, yPercent: -18, ease: 'none', scrollTrigger: { trigger: '.page-head', start: 'top top', end: 'bottom top', scrub: true } });
   }
@@ -96,11 +101,13 @@ function home() {
   const copy = $('.hero__copy')!;
 
   /* Load */
-  const split = SplitText.create('.hero__title', CHARS);
+  SplitText.create('.hero__title', {
+    ...CHARS, autoSplit: true,
+    onSplit: (s) => gsap.from(s.chars, { yPercent: 110, duration: 1.3, ease: 'power4.out', stagger: 0.03, delay: 0.2 }),
+  });
   gsap.set(copy, { visibility: 'visible' });
   gsap.timeline({ defaults: { ease: 'power4.out' } })
     .from('#film', { autoAlpha: 0, scale: 1.06, duration: 2, ease: 'power2.out' }, 0)
-    .from(split.chars, { yPercent: 110, duration: 1.3, stagger: 0.03 }, 0.2)
     .from('.hero__lede, .hero__cta, .hero__byline', { autoAlpha: 0, y: 18, duration: 1, stagger: 0.1 }, 0.7);
 
   /* Hero: held while the pane lifts, floats and turns into a window (beats 0 to 2) */
@@ -199,8 +206,10 @@ function research() {
 }
 
 function about() {
-  const name = SplitText.create('.me__name', CHARS);
-  gsap.from(name.chars, { yPercent: 110, duration: 1.4, ease: 'power4.out', stagger: 0.05 });
+  SplitText.create('.me__name', {
+    ...CHARS, autoSplit: true,
+    onSplit: (s) => gsap.from(s.chars, { yPercent: 110, duration: 1.4, ease: 'power4.out', stagger: 0.05 }),
+  });
 
   // Double exposure: the portrait arrives first, then the second image develops inside it.
   // While you read, that second image keeps drifting slowly through the silhouette.
